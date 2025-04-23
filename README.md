@@ -1,10 +1,10 @@
 # **第三轮考核学习心得**
 
-------
+
 
 - ## 学习内容
 
-------
+
 - MySQL基础内容
 
 - JDBC的简单使用
@@ -13,7 +13,7 @@
 
 - ## 建表
 
-------
+
 
 - ### 商品表
 
@@ -55,7 +55,7 @@ CREATE TABLE order_items (
 ```
 
 - ## 功能实现（重要？）
-------
+
 
 - ### 解决SQL注入问题
   - 使用预编译的SQL语句和参数化的查询PreparedStatement，避免直接拼接参数
@@ -75,7 +75,7 @@ CREATE TABLE order_items (
   - 判断页码是否合法，是否超出总页数
 
 - ## 项目结构
-------
+
 ```
 \ProductManagement
 │  .gitignore
@@ -124,7 +124,7 @@ CREATE TABLE order_items (
 ```
 
 - ## 附加的功能
-------
+
 
 - ### 分页查询
 
