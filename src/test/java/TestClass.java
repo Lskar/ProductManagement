@@ -15,96 +15,113 @@ import java.util.Properties;
 
 public class TestClass {
     @Test
-    public void insertProductTest() {
-
+    public void insertProductTest() throws Exception {
         ProductManagement productManagement = new ProductManagement();
-        List<Product> products = new ArrayList<>();
-        Collections.addAll(products,
-                new Product("小狗",600,999),
-                new Product("小猫",500,999),
-                new Product("薯片",5,888),
-                new Product("可乐",3,777),
-                new Product("巧克力",10,666)
-        );
-        for (Product product : products) {
-            int result = productManagement.insertProduct(product);
-            if(result == 0) {
-                System.out.println("Product "+product.getName()+" inserted failed");
+        try {
+            List<Product> products = new ArrayList<>();
+            Collections.addAll(products,
+                    new Product("小狗",600,999),
+                    new Product("小猫",500,999),
+                    new Product("薯片",5,888),
+                    new Product("可乐",3,777),
+                    new Product("巧克力",10,666)
+            );
+            for (Product product : products) {
+                productManagement.insertProduct(product);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            productManagement.closeConnection();
         }
+        System.out.println("所有商品添加成功！");
     }
 
     @Test
-    public void selectProductByIdTest() {
+    public void selectProductByIdTest() throws Exception {
         ProductManagement productManagement= new ProductManagement();
-        Product product = productManagement.getProductById(4);
-        if(product!=null){
+        try {
+            Product product = productManagement.getProductById(1);
             System.out.println(product);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            productManagement.closeConnection();
         }
-        else{
-            System.out.println("Product not found!");
-        }
+        System.out.println("查询成功！");
     }
 
     @Test
-    public void selectAllProductsTest() {
+    public void selectAllProductsTest() throws Exception {
         List<Product> productList= new ArrayList<Product>();
         ProductManagement productManagement= new ProductManagement();
-        productList=productManagement.getAllProducts("price");
-        if (productList!=null){
+        try {
+            productList=productManagement.getAllProducts("price");
             for (Product product : productList) {
                 System.out.println(product);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            productManagement.closeConnection();
         }
-        else {
-            System.out.println("Product not found!");
-        }
+        System.out.println("所有商品查询成功！");
     }
 
     @Test
-    public void updateProductStockByIdTest() {
+    public void updateProductStockByIdTest() throws Exception{
         ProductManagement productManagement= new ProductManagement();
         //传入购买数量
-        int result=productManagement.updateProduct(productManagement.getProductById(1),-1);
-        if(result>0){
-            System.out.println("Product update successfully!");
+        try {
+            productManagement.updateProduct(productManagement.getProductById(1),-1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            productManagement.closeConnection();
         }
-        else{
-            System.out.println("Product update failed!");
-        }
+        System.out.println("商品更新库存成功！");
     }
 
     @Test
-    public void deleteProductByIdTest() {
+    public void deleteProductByIdTest() throws Exception {
         ProductManagement productManagement= new ProductManagement();
-        int result=productManagement.deleteProductById(5);
-        if(result>0){
-            System.out.println("Product deleted successfully!");
+        try {
+            productManagement.deleteProductById(5);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            productManagement.closeConnection();
         }
-        else{
-            System.out.println("Product deletion failed!");
-        }
+        System.out.println("删除成功！");
     }
 
     @Test
-    public void selectProductsByPage(){
+    public void selectProductsByPage() throws Exception{
         ProductManagement productManagement= new ProductManagement();
-        List<Product> products = new ArrayList<>();
-        products=productManagement.getProductsByPage(2);
-        if (products!=null){
+        try {
+            List<Product> products = new ArrayList<>();
+            products=productManagement.getProductsByPage(1);
             for (Product product : products) {
                 System.out.println(product);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            productManagement.closeConnection();
         }
-        else {
-            System.out.println("Product not found!");
-        }
+        System.out.println("分页查询成功！");
     }
 
 
-
     @Test
-    public void creatOrderTest() {
+    public void createOrderTest() throws Exception {
 
         ProductManagement productManagement= new ProductManagement();
         OrderManagement orderManagement= new OrderManagement();
@@ -120,17 +137,21 @@ public class TestClass {
                 new Item(2,2,productManagement.getProductById(2).getPrice()),
                 new Item(3,2,productManagement.getProductById(3).getPrice()),
                 new Item(4,2,productManagement.getProductById(4).getPrice())
-                );
+        );
         Collections.addAll(orders,
                 new Order(items1),
                 new Order(items2)
-                );
-
-        for (Order order : orders) {
-            int result = orderManagement.insertOrder(order);
-            if(result == 0) {
-                System.out.println("Order "+order.getOrderID()+"inserted failed");
+        );
+        try {
+            for (Order order : orders) {
+                orderManagement.insertOrder(order);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            orderManagement.closeConnection();
+            productManagement.closeConnection();
         }
         System.out.println("All orders inserted");
     }
@@ -140,16 +161,17 @@ public class TestClass {
 
         ProductManagement productManagement= new ProductManagement();
         OrderManagement orderManagement= new OrderManagement();
-        int result=orderManagement.updateOrderById(1,1,-3);
+        try {
+            orderManagement.updateOrderById(1,1,-1);
 
-        if(result>0){
-            System.out.println("Order update successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            orderManagement.closeConnection();
+            productManagement.closeConnection();
         }
-        else{
-            System.out.println("Order update failed!");
-        }
-
-
+        System.out.println("订单更新成功！");
     }
 
 
@@ -157,8 +179,7 @@ public class TestClass {
     @Test
     //订单中选了不存在的商品
     //查询不到产品 7
-    //查询产品出错！
-    public void creatOrderErrorTest1() {
+    public void creatOrderErrorTest1() throws Exception{
         ProductManagement productManagement= new ProductManagement();
         OrderManagement orderManagement= new OrderManagement();
 
@@ -169,21 +190,23 @@ public class TestClass {
                 new Item(7,1)
         );
         Order order =new Order(items);
-        int result=orderManagement.insertOrder(order);
-        if(result>0){
-            System.out.println("Order inserted successfully!");
-        }
-        else{
-            System.out.println("Order insertion failed!");
-        }
+        try {
+            orderManagement.insertOrder(order);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            orderManagement.closeConnection();
+            productManagement.closeConnection();
+        }
+        System.out.println("All orders inserted");
     }
 
     @Test
     //订单中购买的商品数量超过库存
     //库存不足，无法购买！
-    //无法更新产品 1 的库存
-    public void creatOrderErrorTest2() {
+    public void creatOrderErrorTest2() throws Exception{
         ProductManagement productManagement= new ProductManagement();
         OrderManagement orderManagement= new OrderManagement();
 
@@ -194,76 +217,93 @@ public class TestClass {
                 new Item(3,1)
         );
         Order order =new Order(items);
-        int result=orderManagement.insertOrder(order);
-        if(result>0){
-            System.out.println("Order inserted successfully!");
+        try {
+            orderManagement.insertOrder(order);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            orderManagement.closeConnection();
+            productManagement.closeConnection();
         }
-        else{
-            System.out.println("Order insertion failed!");
-        }
+        System.out.println("All orders inserted");
     }
 
     @Test
-    public void deleteOrderByIdTest() {
+    public void deleteOrderByIdTest() throws Exception{
         ProductManagement productManagement= new ProductManagement();
         OrderManagement orderManagement= new OrderManagement();
 
-        //级联删除
-        int result=orderManagement.deleteOrderById(2);
-        if(result>0){
-            System.out.println("Order deleted successfully");
-        }
-        else{
-            System.out.println("Order deletion failed");
-        }
+        try {
+            //级联删除
+            int result=orderManagement.deleteOrderById(2);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            orderManagement.closeConnection();
+            productManagement.closeConnection();
+        }
+        System.out.println("订单删除成功！");
     }
 
     @Test
-    public void selectOrderByIdTest() {
+    public void selectOrderByIdTest() throws Exception{
 
-        ProductManagement productManagement= new ProductManagement();
         OrderManagement orderManagement= new OrderManagement();
-        Order order=orderManagement.getOrderById(1);
-        if(order!=null){
+        try {
+            Order order=orderManagement.getOrderById(1);
+
             System.out.println(order);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            orderManagement.closeConnection();
         }
-        else{
-            System.out.println("Order not found!");
-        }
+        System.out.println("订单查询成功！");
 
     }
 
     @Test
-    public void selectAllOrderTest(){
+    public void selectAllOrderTest()throws Exception{
         ProductManagement productManagement= new ProductManagement();
         OrderManagement orderManagement= new OrderManagement();
-        List<Order> orders=orderManagement.getAllOrdersOrderBy("order_id");;
-        if(orders!=null){
+        try {
+            List<Order> orders=orderManagement.getAllOrdersOrderBy("order_id");
             for (Order order : orders) {
                 System.out.println(order.getOrderID()+" "+order.getTotalPrice());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            orderManagement.closeConnection();
+            productManagement.closeConnection();
         }
-        else{
-            System.out.println("Order not found!");
-        }
+        System.out.println("所有订单查询成功！");
     }
 
     @Test
-    public void selectOrderByPageTest(){
+    public void selectOrderByPageTest()throws Exception{
 
         OrderManagement orderManagement= new OrderManagement();
-        List<Order> orders=orderManagement.getOrdersByPage(2);
-        if(orders!=null){
+        try {
+            List<Order> orders=orderManagement.getOrdersByPage(2);
+
             for (Order order : orders) {
                 System.out.println(order.getOrderID()+" "+order.getTotalPrice());
             }
-        }
-        else{
-            System.out.println("Order not found!");
-        }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            orderManagement.closeConnection();
+        }
+        System.out.println("分页查询成功！");
     }
-
-
 }

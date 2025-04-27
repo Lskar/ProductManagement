@@ -6,9 +6,9 @@ import java.util.Properties;
 
 public class JDBCUtil {
 
-    private static String url=null;
-    private static String username=null;
-    private static String password=null;
+    private static String url = null;
+    private static String username = null;
+    private static String password = null;
 
     static {
         try {
@@ -21,76 +21,71 @@ public class JDBCUtil {
             throw new RuntimeException(e);
         }
     }
+
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url,username,password);
+        return DriverManager.getConnection(url, username, password);
     }
 
     public static void close(Connection conn, PreparedStatement ps, ResultSet rs) {
-        try{
-            if(rs!=null) rs.close();
-            if(ps!=null) ps.close();
-            if(conn!=null) conn.close();
-        }
-        catch(SQLException e){
+        try {
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    public static ResultSet select(Connection conn,PreparedStatement ps,String sql,Object... objs){
+
+    public static ResultSet select(Connection conn, String sql, Object... objs) {
         try {
-//            ps=conn.prepareStatement(sql);
-//            if(obj!=null){
-//                ps.setObject(1,obj);
-//            }
-//            return ps.executeQuery();
-            ps=conn.prepareStatement(sql);
-            if(objs!=null){
-                int i=1;
-                for(Object obj:objs){
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            if (objs != null) {
+                int i = 1;
+                for (Object obj : objs) {
                     ps.setObject(i++, obj);
                 }
             }
-            return ps.executeQuery();
+            ResultSet resultSet = ps.executeQuery();
+            return resultSet;
 
         } catch (Exception e) {
-            throw new ErrorInQueryException("执行查询语句时出错！");
+            throw new ErrorInQueryException("执行查询语句时出错，错误语句："+sql);
         }
     }
 
-    public static int update(Connection conn,PreparedStatement ps,String sql,Object... objs){
-        try{
-            ps=conn.prepareStatement(sql);
-            if(objs!=null){
-                int i=1;
-                for(Object obj:objs){
+    public static int update(Connection conn, String sql, Object... objs) {
+        try  {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            if (objs != null) {
+                int i = 1;
+                for (Object obj : objs) {
                     ps.setObject(i++, obj);
                 }
             }
             return ps.executeUpdate();
-        }
-        catch(Exception e){
-            throw new ErrorInUpdateException("执行更新语句时出错");
+        } catch (Exception e) {
+            throw new ErrorInUpdateException("执行更新语句时出错，错误语句："+sql);
         }
     }
-    public static ResultSet update2(Connection conn,PreparedStatement ps,String sql,boolean isActive,Object... objs){
-        try{
-            if(isActive){
-                ps=conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-            }
-            if(objs!=null){
-                int i=1;
-                for(Object obj:objs){
+
+    public static ResultSet getPreviousResult(Connection conn, String sql, Object... objs) {
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            if (objs != null) {
+                int i = 1;
+                for (Object obj : objs) {
                     ps.setObject(i++, obj);
                 }
             }
             ps.executeUpdate();
             return ps.getGeneratedKeys();
-        }
-        catch(Exception e){
-            throw new ErrorInUpdateException("执行更新语句时出错");
+        } catch (Exception e) {
+            throw new ErrorInUpdateException("执行更新语句时出错,错误语句："+sql);
         }
     }
 
-    public static void startTransaction(Connection conn)  {
+    public static void startTransaction(Connection conn) {
         try {
             conn.setAutoCommit(false);
         } catch (SQLException e) {
