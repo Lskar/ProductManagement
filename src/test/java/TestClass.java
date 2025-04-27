@@ -3,14 +3,11 @@ import org.Lskar.ProductManagement.domain.Order;
 import org.Lskar.ProductManagement.domain.Product;
 import org.Lskar.ProductManagement.order.OrderManagement;
 import org.Lskar.ProductManagement.product.ProductManagement;
-import org.Lskar.ProductManagement.utils.JDBCUtil;
 import org.junit.Test;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 
 public class TestClass {
@@ -30,7 +27,7 @@ public class TestClass {
                 productManagement.insertProduct(product);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             productManagement.closeConnection();
@@ -55,7 +52,7 @@ public class TestClass {
 
     @Test
     public void selectAllProductsTest() throws Exception {
-        List<Product> productList= new ArrayList<Product>();
+        List<Product> productList;
         ProductManagement productManagement= new ProductManagement();
         try {
             productList=productManagement.getAllProducts("price");
@@ -63,7 +60,7 @@ public class TestClass {
                 System.out.println(product);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             productManagement.closeConnection();
@@ -78,7 +75,7 @@ public class TestClass {
         try {
             productManagement.updateProduct(productManagement.getProductById(1),-1);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             productManagement.closeConnection();
@@ -93,7 +90,7 @@ public class TestClass {
             productManagement.deleteProductById(5);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             productManagement.closeConnection();
@@ -105,13 +102,13 @@ public class TestClass {
     public void selectProductsByPage() throws Exception{
         ProductManagement productManagement= new ProductManagement();
         try {
-            List<Product> products = new ArrayList<>();
+            List<Product> products;
             products=productManagement.getProductsByPage(1);
             for (Product product : products) {
                 System.out.println(product);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             productManagement.closeConnection();
@@ -147,7 +144,7 @@ public class TestClass {
                 orderManagement.insertOrder(order);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             orderManagement.closeConnection();
@@ -165,7 +162,7 @@ public class TestClass {
             orderManagement.updateOrderById(1,1,-1);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             orderManagement.closeConnection();
@@ -219,7 +216,7 @@ public class TestClass {
             orderManagement.insertOrder(order);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             orderManagement.closeConnection();
@@ -235,10 +232,10 @@ public class TestClass {
 
         try {
             //级联删除
-            int result=orderManagement.deleteOrderById(2);
+            orderManagement.deleteOrderById(2);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             orderManagement.closeConnection();
@@ -257,7 +254,7 @@ public class TestClass {
             System.out.println(order);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             orderManagement.closeConnection();
@@ -276,7 +273,7 @@ public class TestClass {
                 System.out.println(order.getOrderID()+" "+order.getTotalPrice());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             orderManagement.closeConnection();
@@ -297,7 +294,7 @@ public class TestClass {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             orderManagement.closeConnection();

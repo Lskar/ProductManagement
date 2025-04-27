@@ -124,9 +124,6 @@ public class ProductManagement {
             if (product.getPrice() < 0) {
                 throw new IllegalPriceException("非法价格！");
             }
-//            if(stock<0){
-//                throw new IllegalStockException("非法购买数量！");
-//            }
             if (stock > product.getStock()) {
                 throw new IllegalStockException("库存不足，无法购买！");
             }
