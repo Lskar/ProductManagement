@@ -138,7 +138,7 @@ CREATE TABLE order_items (
 - ## 问题
   - 项目结构不知道怎么规范写
   - 方法写比较乱，出现错误的时候改动的比较多
-  - 在JDBCUtil里面，ps未释放，因为释放后返回的Resultset对象也会被释放，导致在其他方法里无法使用
+  - 在JDBCUtil里面，ps未释放，因为释放后返回的ResultSet对象也会被释放，导致在其他方法里无法使用
 
 
 
