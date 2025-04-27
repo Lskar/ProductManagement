@@ -42,7 +42,7 @@ public class OrderManagement {
                 conn.close();
             }
         } catch(Exception e){
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
@@ -93,7 +93,7 @@ public class OrderManagement {
 
     }
 
-    public int deleteOrderById(int id) throws Exception{
+    public int deleteOrderById(int id) {
 
         String sql=String.format("delete from orders where %s = ?",orderId);
         try{
@@ -114,7 +114,7 @@ public class OrderManagement {
 
         ResultSet rs=null;
         String sql=String.format("select %s from orders where %s = ?",ordersAllColumn,orderId);
-        Order order=null;
+        Order order;
         try{
 
             rs=JDBCUtil.select(conn,sql,id);
@@ -124,7 +124,7 @@ public class OrderManagement {
             else{
                 throw new OrderNotFoundException("查询不到订单 "+id);
             }
-            order.setItems(getItemsByOrderId(conn,rs,id));
+            order.setItems(getItemsByOrderId(id));
 
             return order;
 
@@ -134,15 +134,19 @@ public class OrderManagement {
 
     }
 
-    private List<Item> getItemsByOrderId(Connection conn,ResultSet rs,int id) throws Exception{
-
+    private List<Item> getItemsByOrderId(int id) throws Exception{
+        ResultSet rs = null;
         String sql=String.format("select %s from order_items where order_id = ?",orderItemsAllColumn);
-        List<Item> items=new ArrayList<Item>();
-        rs=JDBCUtil.select(conn,sql,id);
-        while(rs.next()){
-            items.add(new Item(rs.getInt(productId), rs.getInt(quantity)));
+        List<Item> items= new ArrayList<>();
+        try {
+            rs=JDBCUtil.select(conn,sql,id);
+            while(rs.next()){
+                items.add(new Item(rs.getInt(productId), rs.getInt(quantity)));
+            }
+            return items;
+        } finally {
+            JDBCUtil.close(null,null,rs);
         }
-        return items;
     }
 
     public List<Order> getAllOrdersOrderBy(String orderBy) throws Exception{
@@ -152,7 +156,6 @@ public class OrderManagement {
         String sql=String.format("select %s from orders order by %s",ordersAllColumn,orderBy);
         List<Order> orders= new ArrayList<>();
         try{
-            conn=JDBCUtil.getConnection();
             rs=JDBCUtil.select(conn,sql);
             if(!rs.next()){
                 throw new OrderNotFoundException("查询不到任何订单");
@@ -169,69 +172,76 @@ public class OrderManagement {
 
     }
 
-    private int getOrdersCount(ResultSet rs) throws Exception{
+    private int getOrdersCount() throws Exception{
 
-        int count=0;
+        int count;
+        ResultSet rs = null;
         String sql=String.format("select count(%s) count from orders",orderId);
-        conn=JDBCUtil.getConnection();
-        rs=JDBCUtil.select(conn,sql,null);
-        if(rs.next()){
-            count = rs.getInt("count");
+        try {
+            rs=JDBCUtil.select(conn,sql);
+            if(rs.next()){
+                count = rs.getInt("count");
+            }
+            else{
+                throw new OrderNotFoundException("查询不到订单记录的数量");
+            }
+            return count;
+        } finally {
+            JDBCUtil.close(null,null,rs);
         }
-        else{
-            throw new OrderNotFoundException("查询不到订单记录的数量");
-        }
-        return count;
     }
 
-    private List<Order> selectOrderByPage(ResultSet rs,int begin,int limit) throws Exception{
+    private List<Order> selectOrderByPage(int begin,int limit) throws Exception{
+        ResultSet rs = null;
         String sql=String.format("select %s from orders limit ?,?",ordersAllColumn);
         List<Order> orders=new ArrayList<>();
-        conn=JDBCUtil.getConnection();
-        rs=JDBCUtil.select(conn,sql,begin,limit);
-        if(!rs.next()){
-            throw new OrderNotFoundException("分页查询失败");
-        }
-        else{
-            do{
-                orders.add(getOrderById(rs.getInt(orderId)));
+        try {
+            rs=JDBCUtil.select(conn,sql,begin,limit);
+            if(!rs.next()){
+                throw new OrderNotFoundException("分页查询失败");
             }
-            while(rs.next());
-        }
-        return orders;
-    }
-
-    public List<Order> getOrdersByPage(int page) throws Exception{
-        ResultSet rs=null;
-        List<Order> orders=new ArrayList<>();
-        try{
-
-            int limit=2;
-            int totalCount=getOrdersCount(rs);
-            int totalPage=(totalCount%limit!=0) ? totalCount / limit + 1 : totalCount / limit;
-            if(page<=0){
-                throw new ProductNotFoundException("非法页码！");
+            else{
+                do{
+                    orders.add(getOrderById(rs.getInt(orderId)));
+                }
+                while(rs.next());
             }
-            if(page>totalCount){
-                throw new ProductNotFoundException("所查询的页码超出最大页数："+totalPage);
-            }
-            int begin=(page-1)*limit;
-            orders=selectOrderByPage(rs,begin,limit);
             return orders;
         } finally {
             JDBCUtil.close(null,null,rs);
         }
     }
 
-    private Item getItemById(ResultSet rs,int id,int itemId) throws Exception{
-        String sql=String.format("select %s from order_items where %s = ? and %s = ?",orderItemsAllColumn,orderId,productId);
+    public List<Order> getOrdersByPage(int page) throws Exception{
 
-        rs=JDBCUtil.select(conn,sql,id,itemId);
-        if(rs.next()){
-            return new Item(rs.getInt(productId),rs.getInt(quantity));
+        List<Order> orders;
+        int limit=2;
+        int totalCount=getOrdersCount();
+        int totalPage=(totalCount%limit!=0) ? totalCount / limit + 1 : totalCount / limit;
+        if(page<=0){
+            throw new ProductNotFoundException("非法页码！");
         }
-        else{
-            throw new OrderNotFoundException("找不到此条记录");
+        if(page>totalPage){
+            throw new ProductNotFoundException("所查询的页码超出最大页数："+totalPage);
+        }
+        int begin=(page-1)*limit;
+        orders=selectOrderByPage(begin,limit);
+        return orders;
+    }
+
+    private Item getItemById(int id,int itemId) throws Exception{
+        ResultSet rs = null;
+        String sql=String.format("select %s from order_items where %s = ? and %s = ?",orderItemsAllColumn,orderId,productId);
+        try {
+            rs=JDBCUtil.select(conn,sql,id,itemId);
+            if(rs.next()){
+                return new Item(rs.getInt(productId),rs.getInt(quantity));
+            }
+            else{
+                throw new OrderNotFoundException("找不到此条记录:"+id+"号订单，"+itemId+"号商品");
+            }
+        } finally {
+            JDBCUtil.close(null,null,rs);
         }
     }
     private void updateItem(Item oldItem,int id,int number) {
@@ -256,13 +266,11 @@ public class OrderManagement {
 
     public int updateOrderById(int id,int itemId,int number)throws Exception{
 
-
-        ResultSet rs=null;
         ProductManagement productManagement=new ProductManagement();
 
         try{
             JDBCUtil.startTransaction(conn);
-            Item oldItem= getItemById(rs,id,itemId);
+            Item oldItem= getItemById(id,itemId);
 
             //修改order_items表
             if(oldItem.getQuantity()+number<0){
@@ -292,10 +300,5 @@ public class OrderManagement {
             JDBCUtil.rollbackTransaction(conn);
             throw e;
         }
-        finally {
-            JDBCUtil.close(null,null,rs);
-        }
-
     }
-
 }

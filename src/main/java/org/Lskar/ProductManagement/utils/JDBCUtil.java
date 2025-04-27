@@ -6,9 +6,9 @@ import java.util.Properties;
 
 public class JDBCUtil {
 
-    private static String url = null;
-    private static String username = null;
-    private static String password = null;
+    private static final String url;
+    private static final String username;
+    private static final String password;
 
     static {
         try {
@@ -32,7 +32,7 @@ public class JDBCUtil {
             if (ps != null) ps.close();
             if (conn != null) conn.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
@@ -46,8 +46,7 @@ public class JDBCUtil {
                     ps.setObject(i++, obj);
                 }
             }
-            ResultSet resultSet = ps.executeQuery();
-            return resultSet;
+            return ps.executeQuery();
 
         } catch (Exception e) {
             throw new ErrorInQueryException("执行查询语句时出错，错误语句："+sql);
@@ -67,6 +66,7 @@ public class JDBCUtil {
         } catch (Exception e) {
             throw new ErrorInUpdateException("执行更新语句时出错，错误语句："+sql);
         }
+
     }
 
     public static ResultSet getPreviousResult(Connection conn, String sql, Object... objs) {

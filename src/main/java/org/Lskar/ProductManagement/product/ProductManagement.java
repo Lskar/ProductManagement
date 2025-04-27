@@ -37,12 +37,12 @@ public class ProductManagement {
                 conn.close();
             }
         } catch(Exception e){
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
 
-    public int insertProduct(Product product) throws Exception {
+    public int insertProduct(Product product) {
 
 
         String sql = String.format("insert into products(%s) values(?,?,?)", insertColumns);
@@ -111,7 +111,7 @@ public class ProductManagement {
         }
     }
 
-    public int updateProduct(Product product, int stock) throws Exception{
+    public int updateProduct(Product product, int stock) {
 
 
 
@@ -141,7 +141,7 @@ public class ProductManagement {
     }
 
 
-    public int deleteProductById(int id) throws Exception{
+    public int deleteProductById(int id) {
 
         String sql = String.format("delete from products where %s = ?", productId);
 
@@ -157,62 +157,65 @@ public class ProductManagement {
     }
 
 
-    private List<Product> selectProductByPage(ResultSet rs, int begin, int limit) throws Exception {
+    private List<Product> selectProductByPage(int begin, int limit) throws Exception {
 
+        ResultSet rs = null;
         String sql = String.format("select %s from products limit ?,?", allColumns);
         ArrayList<Product> products = new ArrayList<>();
 
-        rs = JDBCUtil.select(conn, sql, begin, limit);
-        if (!rs.next()) {
-            throw new ProductNotFoundException("分页查询失败！");
-        } else {
-            do {
-                products.add(new Product(rs.getInt(productId), rs.getString(productName), rs.getDouble(productPrice),
-                        rs.getInt(productStack)));
+        try {
+            rs = JDBCUtil.select(conn, sql, begin, limit);
+            if (!rs.next()) {
+                throw new ProductNotFoundException("分页查询失败！");
+            } else {
+                do {
+                    products.add(new Product(rs.getInt(productId), rs.getString(productName), rs.getDouble(productPrice),
+                            rs.getInt(productStack)));
 
-            } while (rs.next());
+                } while (rs.next());
+            }
+            return products;
+        }finally {
+            JDBCUtil.close(null, null, rs);
         }
-        return products;
     }
 
-    private int getProductsCount (ResultSet rs) throws Exception {
+    private int getProductsCount () throws Exception {
 
         int count;
+        ResultSet rs =null;
         String sql = String.format("select count(%s) count from products", productId);
-        rs = JDBCUtil.select(conn, sql);
-
-        if (rs.next()) {
-            count = rs.getInt("count");
-        } else {
-            throw new ProductNotFoundException("查询不到产品记录的数量");
-
-        }
-        return count;
-    }
-
-
-    public List<Product> getProductsByPage(int page) throws Exception {
-
-        ResultSet rs = null;
-        List<Product> products = new ArrayList<>();
         try {
+            rs = JDBCUtil.select(conn, sql);
 
-            int limit = 3;
-            int totalCount = getProductsCount(rs);
-            int totalPage = (totalCount % limit != 0) ? totalCount / limit + 1 : totalCount / limit;
+            if (rs.next()) {
+                count = rs.getInt("count");
+            } else {
+                throw new ProductNotFoundException("查询不到产品记录的数量");
 
-            if (page <= 0) {
-                throw new ProductNotFoundException("非法页码！");
             }
-            if (page > totalCount) {
-                throw new ProductNotFoundException("所查询的页码超出最大页数：" + totalPage);
-            }
-            int begin = (page - 1) * limit;
-            products = selectProductByPage(rs, begin, limit);
-            return products;
+            return count;
         } finally {
             JDBCUtil.close(null, null, rs);
         }
+    }
+
+    public List<Product> getProductsByPage(int page) throws Exception {
+
+        List<Product> products;
+        int limit = 3;
+        int totalCount = getProductsCount();
+        int totalPage = (totalCount % limit != 0) ? totalCount / limit + 1 : totalCount / limit;
+        if (page <= 0) {
+            throw new ProductNotFoundException("非法页码！");
+        }
+        if (page > totalPage) {
+            throw new ProductNotFoundException("所查询的页码超出最大页数：" + totalPage);
+        }
+        int begin = (page - 1) * limit;
+        products = selectProductByPage(begin,limit);
+        return products;
+
     }
 
 }

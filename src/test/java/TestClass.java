@@ -45,7 +45,7 @@ public class TestClass {
             Product product = productManagement.getProductById(1);
             System.out.println(product);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             productManagement.closeConnection();
@@ -174,8 +174,6 @@ public class TestClass {
         System.out.println("订单更新成功！");
     }
 
-
-
     @Test
     //订单中选了不存在的商品
     //查询不到产品 7
@@ -194,7 +192,7 @@ public class TestClass {
             orderManagement.insertOrder(order);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         } finally {
             orderManagement.closeConnection();
