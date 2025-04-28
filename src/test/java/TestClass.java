@@ -287,7 +287,7 @@ public class TestClass {
 
         OrderManagement orderManagement= new OrderManagement();
         try {
-            List<Order> orders=orderManagement.getOrdersByPage(2);
+            List<Order> orders=orderManagement.getOrdersByPage(1);
 
             for (Order order : orders) {
                 System.out.println(order.getOrderID()+" "+order.getTotalPrice());

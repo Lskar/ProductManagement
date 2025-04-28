@@ -13,17 +13,17 @@ import java.util.List;
 
 public class ProductManagement {
 
-    private final String productId = "product_id";
+    private static final String productId = "product_id";
 
-    private final String productName = "product_name";
+    private static final String productName = "product_name";
 
-    private final String productPrice = "price";
+    private static final String productPrice = "price";
 
-    private final String productStack = "stock";
+    private static final String productStack = "stock";
 
-    private final String allColumns = "product_id,product_name,price,stock";
-
-    private final String insertColumns = String.format("%s,%s,%s", productName, productPrice, productStack);
+//    private static final String allColumns = "product_id,product_name,price,stock";
+//
+//    private static final String insertColumns = String.format("%s,%s,%s", productName, productPrice, productStack);
 
     Connection conn;
 
@@ -45,8 +45,8 @@ public class ProductManagement {
     public int insertProduct(Product product) {
 
 
-        String sql = String.format("insert into products(%s) values(?,?,?)", insertColumns);
-
+        //String sql = String.format("insert into products(%s) values(?,?,?)", insertColumns);
+        String sql = "insert into products(product_name,price, stock) values(?,?,?)";
         try {
             JDBCUtil.startTransaction(conn);
             if (product.getPrice() < 0) {
@@ -71,8 +71,8 @@ public class ProductManagement {
 
         ResultSet rs = null;
 
-        String sql = String.format("select %s from products where %s = ?", allColumns, productId);
-
+        //String sql = String.format("select %s from products where %s = ?", allColumns, productId);
+        String sql ="select product_id,product_name,price,stock from products where product_id = ?";
         try {
             rs = JDBCUtil.select(conn, sql, id);
             if (rs.next()) {
@@ -90,8 +90,8 @@ public class ProductManagement {
 
         ResultSet rs = null;
 
-        String sql = String.format("select %s from products order by %s", allColumns,orderBy);
-
+        //String sql = String.format("select %s from products order by %s", allColumns,orderBy);
+        String sql = String.format("select product_id,product_name,price,stock from products order by %s",orderBy);
         ArrayList<Product> products = new ArrayList<>();
         try {
 
@@ -115,8 +115,9 @@ public class ProductManagement {
 
 
 
-        String sql = String.format("update products set %s = ?, %s = ?, %s = ? where %s = ?", productName, productPrice,
-                productStack, productId);
+        //String sql = String.format("update products set %s = ?, %s = ?, %s = ? where %s = ?", productName, productPrice,
+         //       productStack, productId);
+        String sql = "update products set product_name = ?, price = ?, stock = ? where product_id = ?";
 
         try {
 
@@ -140,7 +141,8 @@ public class ProductManagement {
 
     public int deleteProductById(int id) {
 
-        String sql = String.format("delete from products where %s = ?", productId);
+//        String sql = String.format("delete from products where %s = ?", productId);
+        String sql = "delete from products where product_id = ?";
 
         try {
             JDBCUtil.startTransaction(conn);
@@ -157,7 +159,8 @@ public class ProductManagement {
     private List<Product> selectProductByPage(int begin, int limit) throws Exception {
 
         ResultSet rs = null;
-        String sql = String.format("select %s from products limit ?,?", allColumns);
+//        String sql = String.format("select %s from products limit ?,?", allColumns);
+        String sql = "select product_id,product_name,price,stock from products limit ?,?";
         ArrayList<Product> products = new ArrayList<>();
 
         try {
@@ -181,7 +184,8 @@ public class ProductManagement {
 
         int count;
         ResultSet rs =null;
-        String sql = String.format("select count(%s) count from products", productId);
+//        String sql = String.format("select count(%s) count from products", productId);
+        String sql = "select count(product_id) count from products";
         try {
             rs = JDBCUtil.select(conn, sql);
 
