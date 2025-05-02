@@ -14,15 +14,15 @@ import java.util.List;
 public class OrderManagement {
 
 
-    private final String orderId="order_id";
+    private static final String orderId="order_id";
 
-    private final String orderTime="order_time";
+    private static final String orderTime="order_time";
 
-    private final String totalPrice="total_price";
+    private static final String totalPrice="total_price";
 
-    private final String productId="product_id";
+    private static final String productId="product_id";
 
-    private final String quantity="quantity";
+    private static final String quantity="quantity";
 
 //    private final String orderItemsAllColumn=String.format("%s,%s,%s",orderId,productId,quantity);
 //
@@ -99,7 +99,6 @@ public class OrderManagement {
 
 //        String sql=String.format("delete from orders where %s = ?",orderId);
         String sql="delete from orders where order_id = ?";
-
 
         try{
 
