@@ -71,7 +71,7 @@ public class TestClass {
     @Test
     public void updateProductStockByIdTest() throws Exception{
         ProductManagement productManagement= new ProductManagement();
-        //传入购买数量
+        //传入要更新的数量
         try {
             productManagement.updateProduct(productManagement.getProductById(1),-1);
         } catch (Exception e) {
@@ -125,19 +125,26 @@ public class TestClass {
         List<Order> orders= new ArrayList<>();
         List<Item> items1=new ArrayList<>();
         List<Item> items2=new ArrayList<>();
+        List<Item> items3=new ArrayList<>();
         Collections.addAll(items1,
                 new Item(1,1,productManagement.getProductById(1).getPrice()),
-                new Item(2,1,productManagement.getProductById(2).getPrice()),
-                new Item(3,1,productManagement.getProductById(3).getPrice())
+                new Item(2,3,productManagement.getProductById(2).getPrice()),
+                new Item(3,3,productManagement.getProductById(3).getPrice())
         );
         Collections.addAll(items2,
                 new Item(2,2,productManagement.getProductById(2).getPrice()),
-                new Item(3,2,productManagement.getProductById(3).getPrice()),
+                new Item(3,3,productManagement.getProductById(3).getPrice()),
                 new Item(4,2,productManagement.getProductById(4).getPrice())
+        );
+        Collections.addAll(items3,
+                new Item(1,5,productManagement.getProductById(2).getPrice()),
+                new Item(2,5,productManagement.getProductById(3).getPrice()),
+                new Item(4,7,productManagement.getProductById(4).getPrice())
         );
         Collections.addAll(orders,
                 new Order(items1),
-                new Order(items2)
+                new Order(items2),
+                new Order(items3)
         );
         try {
             for (Order order : orders) {
@@ -180,9 +187,9 @@ public class TestClass {
 
         List<Item> items=new ArrayList<>();
         Collections.addAll(items,
-                new Item(1,1),
-                new Item(2,1),
-                new Item(7,1)
+                new Item(1,5),
+                new Item(2,5),
+                new Item(7,5)
         );
         Order order =new Order(items);
         try {
@@ -208,8 +215,8 @@ public class TestClass {
         List<Item> items=new ArrayList<>();
         Collections.addAll(items,
                 new Item(1,1000000),
-                new Item(2,1),
-                new Item(3,1)
+                new Item(2,5),
+                new Item(3,5)
         );
         Order order =new Order(items);
         try {
@@ -287,7 +294,7 @@ public class TestClass {
 
         OrderManagement orderManagement= new OrderManagement();
         try {
-            List<Order> orders=orderManagement.getOrdersByPage(1);
+            List<Order> orders=orderManagement.getOrdersByPage(2);
 
             for (Order order : orders) {
                 System.out.println(order.getOrderID()+" "+order.getTotalPrice());
