@@ -13,13 +13,13 @@ import java.util.List;
 
 public class ProductManagement {
 
-    private static final String productId = "product_id";
+    private static final String PRODUCT_ID = "product_id";
 
-    private static final String productName = "product_name";
+    private static final String PRODUCT_NAME = "product_name";
 
-    private static final String productPrice = "price";
+    private static final String PRODUCT_PRICE = "price";
 
-    private static final String productStack = "stock";
+    private static final String PRODUCT_STOCK = "stock";
 
 //    private static final String allColumns = "product_id,product_name,price,stock";
 //
@@ -76,8 +76,8 @@ public class ProductManagement {
         try {
             rs = JDBCUtil.select(conn, sql, id);
             if (rs.next()) {
-                return new Product(rs.getInt(productId), rs.getString(productName), rs.getDouble(productPrice),
-                        rs.getInt(productStack));
+                return new Product(rs.getInt(PRODUCT_ID), rs.getString(PRODUCT_NAME), rs.getDouble(PRODUCT_PRICE),
+                        rs.getInt(PRODUCT_STOCK));
             } else {
                 throw new ProductNotFoundException("查询不到产品 " + id);
             }
@@ -101,8 +101,8 @@ public class ProductManagement {
             } else {
                 do {
                     products.add(
-                            new Product(rs.getInt(productId), rs.getString(productName), rs.getDouble(productPrice),
-                                    rs.getInt(productStack)));
+                            new Product(rs.getInt(PRODUCT_ID), rs.getString(PRODUCT_NAME), rs.getDouble(PRODUCT_PRICE),
+                                    rs.getInt(PRODUCT_STOCK)));
                 } while (rs.next());
             }
             return products;
@@ -169,8 +169,8 @@ public class ProductManagement {
                 throw new ProductNotFoundException("分页查询失败！");
             } else {
                 do {
-                    products.add(new Product(rs.getInt(productId), rs.getString(productName), rs.getDouble(productPrice),
-                            rs.getInt(productStack)));
+                    products.add(new Product(rs.getInt(PRODUCT_ID), rs.getString(PRODUCT_NAME), rs.getDouble(PRODUCT_PRICE),
+                            rs.getInt(PRODUCT_STOCK)));
 
                 } while (rs.next());
             }

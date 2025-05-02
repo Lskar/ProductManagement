@@ -14,20 +14,19 @@ import java.util.List;
 public class OrderManagement {
 
 
-    private static final String orderId="order_id";
+    private static final String ORDER_ID="order_id";
 
-    private static final String orderTime="order_time";
+    private static final String ORDER_TIME="order_time";
 
-    private static final String totalPrice="total_price";
+    private static final String TOTAL_PRICE="total_price";
 
-    private static final String productId="product_id";
+    private static final String PRODUCT_ID="product_id";
 
-    private static final String quantity="quantity";
+    private static final String QUANTITY="quantity";
 
 //    private final String orderItemsAllColumn=String.format("%s,%s,%s",orderId,productId,quantity);
 //
 //    private final String ordersAllColumn=String.format("%s,%s,%s",orderId,orderTime,totalPrice);
-
     private final ProductManagement productManagement=new ProductManagement();
 
     Connection conn;
@@ -125,7 +124,7 @@ public class OrderManagement {
 
             rs=JDBCUtil.select(conn,sql,id);
             if(rs.next()){
-                order=new Order(rs.getInt(orderId),rs.getTimestamp(orderTime),rs.getDouble(totalPrice));
+                order=new Order(rs.getInt(ORDER_ID),rs.getTimestamp(ORDER_TIME),rs.getDouble(TOTAL_PRICE));
             }
             else{
                 throw new OrderNotFoundException("查询不到订单 "+id);
@@ -148,7 +147,7 @@ public class OrderManagement {
         try {
             rs=JDBCUtil.select(conn,sql,id);
             while(rs.next()){
-                items.add(new Item(rs.getInt(productId), rs.getInt(quantity)));
+                items.add(new Item(rs.getInt(PRODUCT_ID), rs.getInt(QUANTITY)));
             }
             return items;
         } finally {
@@ -170,7 +169,7 @@ public class OrderManagement {
             }
             else{
                 do{
-                    orders.add(getOrderById(rs.getInt(orderId)));
+                    orders.add(getOrderById(rs.getInt(ORDER_ID)));
                 }while(rs.next());
             }
             return orders;
@@ -212,7 +211,7 @@ public class OrderManagement {
             }
             else{
                 do{
-                    orders.add(getOrderById(rs.getInt(orderId)));
+                    orders.add(getOrderById(rs.getInt(ORDER_ID)));
                 }
                 while(rs.next());
             }
@@ -246,7 +245,7 @@ public class OrderManagement {
         try {
             rs=JDBCUtil.select(conn,sql,id,itemId);
             if(rs.next()){
-                return new Item(rs.getInt(productId),rs.getInt(quantity));
+                return new Item(rs.getInt(PRODUCT_ID),rs.getInt(QUANTITY));
             }
             else{
                 throw new OrderNotFoundException("找不到此条记录:"+id+"号订单，"+itemId+"号商品");
